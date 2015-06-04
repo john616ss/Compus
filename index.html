@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script type="text/javascript" charset="utf-8" src="phonegap.js"></script>
+<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet" href="css/jquery-ui.css" />
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery-ui.js"></script>
+<script src="js/jquery.mobile-1.4.5.min.js"></script>
+<script src="phonegap.js"></script>
+<title>Tienda de Compus</title>
+<script type="text/javascript">
+$(document).ready(function inicio(){
+
+/////Registrar clientes y productos
+/////Registrar Productos
+  var btnGuardar=$("#produc");
+  btnGuardar.click(function produc(){
+  var nombre=$("#nombre").val();
+  var marca=$("#marca").val();
+  var descripcion=$("#descripcion").val();
+  var precio=parseInt($("#precio").val());
+  
+    $.ajax({
+    type:"POST",
+    url:"http://dead616ss.260mb.net/guardarPro.php",
+    data:"nombre="+nombre+"&marca="+marca+"&precio="+precio+"&descripcion="+descripcion,
+    success: registro
+    });
+    
+    function registro(datos){
+    alert(datos);
+    }
+  });
+  ///////Finaliza registro de productos
+
+////////Registrar Clientes
+
+  var btnGuardar=$("#client");
+  btnGuardar.click(function produc(){
+  var nombre=$("#nombre").val();
+  var direccion=$("#direccion").val();
+  var correo=$("#correo").val();
+  var telefono=$("#telefono").val();
+  
+    $.ajax({
+    type:"POST",
+    url:"http://dead616ss.260mb.net/guardarCli.php",
+    data:"nombre="+nombre+"&direccion="+direccion+"&correo="+correo+"&descripcion="+descripcion+"&telefono="+telefono,
+    success: registro
+    });
+    
+    function registro(datos){
+    alert(datos);
+    }
+  });
+
+  
+//////////////finaliza registros de productos y clientes
+
+
+//////////consultar los registros de clientes y productos
+
+
+//////////productos
+   var btnConsulta=$("#pro");
+  btnConsulta.click(function cons(){  
+    $.ajax({
+    type:"POST",
+    url:"http://dead616ss.260mb.net/consultarPRO.php",
+    data:"",
+    success: consultaDatos
+    });
+    
+    function consultaDatos(datos){
+    var respDatos=$.parseJSON(datos);   
+    var respuesta=$("#consultaPro");
+    dibujarTabla(respuesta, respDatos);
+    }
+  });
+
+
+  function dibujarTabla(respuesta, respDatos){
+  respuesta.html("");
+    respuesta.append('<table id="tab" border="1">');
+    var tabla=$("#tab");
+    tabla.html("<tr><caption>Tabla de Productos</caption><th>Id_Producto</th><th>Nombre</th><th>Marca</th><th>Precio</th><th>Descripcion</th></tr>");
+    for(var i in respDatos){
+      tabla.append("<tr><td>"+respDatos[i].Id_Producto+"</td>"
+      +"<td>"+respDatos[i].Nombre+"</td>"
+      +"<td>"+respDatos[i].Marca+"</td>"
+      +"<td>"+respDatos[i].Precio+"</td>"
+      +"<td>"+respDatos[i].Descripcion+"</td></tr>");
+    }
+    tabla.append("</table>");
+  }
+
+///////////clientes
+  var btnConsulta=$("#cli");
+  btnConsulta.click(function cons(){  
+    $.ajax({
+    type:"POST",
+    url:"http://dead616ss.260mb.net/consultarCLI.php",
+    data:"",
+    success: consultaDatos2
+    });
+    
+    function consultaDatos2(base){
+    var respDatos2=$.parseJSON(base);   
+    var respuesta2=$("#consultaCli");
+    dibujarTabla2(respuesta2, respDatos2);
+    }
+  });
+
+
+  function dibujarTabla2(respuesta2, respDatos2){
+  respuesta2.html("");
+    respuesta2.append('<table id="tab" border="1">');
+    var tabla=$("#tab");
+    tabla.html("caption>Tabla de Clientes</caption><tr><th>id_Cliente</th><th>Nombre</th><th>Direccion</th><th>Correo</th><th>Telefono</th></tr>");
+    for(var n in respDatos2){
+      tabla.append("<tr><td>"+respDatos2[n].Id_Cliente+"</td>"
+      +"<td>"+respDatos2[n].Nombre+"</td>"
+      +"<td>"+respDatos2[n].Direccion+"</td>"
+      +"<td>"+respDatos2[n].Correo+"</td>"
+      +"<td>"+respDatos2[n].Telefono+"</td></tr>");
+    }
+    tabla.append("</table>");
+  }
+
+
+
+///////////////finalizacion de las consultas
+
+
+  //////consulta la tabla que cambiara el registro
+  var btnConsAct=$("#btnConsAct");
+  btnConsAct.click(function cargarDat(){  
+    $.ajax({
+    type:"POST",
+    url:"http://dead616ss.260mb.net/consultarPRO.php",
+    data:"",
+    success: cargarDatos
+    });
+    
+    function cargarDatos(datos){   
+      var respCarga=$.parseJSON(datos);       
+      var respConAct=$("#respConAct");      
+      dibujarTabla(respConAct,respCarga);
+    }
+  });
+
+  /////finaliza la tabla que se cambiara el registro
+  
+  ////muestra los datos que se cambiaran de productos
+  var btnCarDatos=$("#btnCarDatos");
+  btnCarDatos.click(function cargarInf(){
+  var Id=parseInt($("#nomActualizar").val());
+    $.ajax({
+    type:"POST",
+    url:"http://dead616ss.260mb.net/consultaBD2.php",
+    data:"Id="+Id,
+    success: cargarDatosAct
+    });
+    
+    function cargarDatosAct(datos){
+      var consDatAct=$.parseJSON(datos);
+      var respCargDatos=$("#respCargDatos");//Div del resultado para dibujar controles
+      respCargDatos.html("<label>ID:</label><input type='text' id='Id' disabled='yes'>");
+      respCargDatos.append("<label>Nombre:</label><input type='text' id='nom'>");
+      respCargDatos.append("<label>Marca:</label><input type='text' id='mar'>");
+      respCargDatos.append("<label>Precio:</label><input type='text' id='pre'>");
+      respCargDatos.append("<label>Descripcion:</label><input type='text' id='des'>");
+
+      var Id=$("#Id");
+      var nom=$("#nom");
+      var mar=$("#mar");
+      var pre=$("#pre");
+      var des=$("#des");
+      for(var i in consDatAct){
+	Id.val(consDatAct[i].Id_Producto);
+	nom.val(consDatAct[i].Nombre);
+	mar.val(consDatAct[i].Marca);
+	pre.val(consDatAct[i].Precio);
+	des.val(consDatAct[i].Descripcion);
+      }
+    
+    }
+  });
+  /////////finaliza los datos que se cambiaran
+
+  /////////boton que guarda la actualizacion
+  var btnGuarDatos=$("#btnGuarDatos");
+  btnGuarDatos.click(function actual(){
+    var id=parseInt($("#Id").val());
+    var nombre=$("#nom").val();
+    var marca=$("#mar").val();
+    var precio=$("#pre").val();
+    var descripcion=$("#des").val();
+  
+    if ( nombre=="" || marca=="" || precio=="" || descripcion=="") {
+      alert("Ingresar informacion en todos los campos ");
+    }
+
+    else{
+      $.ajax({
+
+        type:"POST",
+        url:"http://dead616ss.260mb.net/actualizarPRO.php",
+        data:"id="+id+"&nombre="+nombre+"&marca="+marca+"&precio="+precio+"&descripcion="+descripcion,
+        success: actualizacion
+        });
+   
+      }
+       function actualizacion(datos){
+        alert("datos:"+datos);
+      }
+  });
+
+///////////////finaliza boton de actualizacion
+
+  /////////boton para eliminar un registros
+
+    var btnConsEliminar=$("#btnConsEliminar");
+  btnConsEliminar.click(function conEliminar(){
+      $.ajax({
+        type:"POST",
+        url:"",
+        data:"",
+        success:consultaAntEliminar
+      });
+      function consultaAntEliminar(datos){
+          var datAntEliminar=$.parseJSON(datos);
+          var respConElim=$("#respConElim");
+        dibujarTabla(respConElim,datAntEliminar);
+      }
+  });
+  var btnEliminar=$("#btnEliminar");
+  btnEliminar.click(function eliminarDato(){
+    var   idEliminar=parseInt($("#idEliminar").val());
+    $.ajax({
+        type:"POST",
+        url:"http://dead616ss.260mb.net/eliminarPRO.php",
+        data:"Id="+idEliminar,
+        success:Eliminacion
+    });
+    function Eliminacion(datos){
+        alert(datos);
+    }
+  });
+
+  ///////finaliza boton para eliminar un registro
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+////////inicia consulta del id que se cambiara
+     var btnConsCli=$("#btnConsCli");
+  btnConsCli.click(function cargarCli(){  
+    $.ajax({
+    type:"POST",
+    url:"http://dead616ss.260mb.net/consultarCLI.php",
+    data:"",
+    success: cargarDatos
+    });
+    
+    function cargarDatos(datos){   
+      var respCarga2=$.parseJSON(datos);       
+      var respConAct2=$("#respConCli");      
+      dibujarTabla2(respConAct2,respCarga2);
+    }
+  });
+
+
+////muestra los datos que se cambiaran de id clientes
+
+<!--finaliza boton de actualizacion-->
+
+  
+
+ var btnCarDatos=$("#btnCarDatos2");
+  btnCarDatos.click(function cargarInf(){
+  var Id=parseInt($("#nomActualizar2").val());
+    $.ajax({
+    type:"POST",
+    url:"http://dead616ss.260mb.net/consultaBD3.php",
+    data:"Id="+Id,
+    success: cargarDatosAct
+    });
+    
+    function cargarDatosAct(datos){
+      var consDatAct2=$.parseJSON(datos);
+      var respCargDatos2=$("#respCargDatos2");//Div del resultado para dibujar controles
+      respCargDatos2.html("<label>ID:</label><input type='text' id='Id' disabled='yes'>");
+      respCargDatos2.append("<label>Nombre:</label><input type='text' id='nom'>");
+      respCargDatos2.append("<label>Direccion:</label><input type='text' id='dir'>");
+      respCargDatos2.append("<label>Correo:</label><input type='text' id='cor'>");
+      respCargDatos2.append("<label>Telefono:</label><input type='text' id='tel'>");
+
+      var Id=$("#Id");
+      var nom=$("#nom");
+      var dir=$("#dir");
+      var cor=$("#cor");
+      var tel=$("#tel");
+      for(var i in consDatAct2){
+  Id.val(consDatAct2[i].Id_Cliente);
+  nom.val(consDatAct2[i].Nombre);
+  dir.val(consDatAct2[i].Direccion);
+  cor.val(consDatAct2[i].Correo);
+  tel.val(consDatAct2[i].Telefono);
+      }
+    
+    }
+  });
+  /////////finaliza los datos que se cambiaran
+
+  /////////boton que guarda la actualizacion
+  var btnGuarClientes=$("#btnGuarDatos2");
+  btnGuarClientes.click(function actualcli(){
+    var id=parseInt($("#Id").val());
+    var nombre=$("#nom").val();
+    var direccion=$("#dir").val();
+    var correo=$("#cor").val();
+    var telefono=$("#tel").val();
+  
+    if ( nombre=="" || direccion=="" || correo=="" || telefono=="") {
+      alert("Ingresar informacion en todos los campos ");
+    }
+
+    else{
+      $.ajax({
+
+        type:"POST",
+        url:"http://dead616ss.260mb.net/actualizarCLI.php",
+        data:"id="+id+"&nombre="+nombre+"&direccion="+direccion+"&correo="+correo+"&telefono="+telefono,
+        success: actualizacion2
+        });
+   
+      }
+       function actualizacion2(datos){
+        alert("datos:"+datos);
+      }
+  });
+
+
+
+
+  /////////boton para eliminar un registros
+
+    var btnEliminarCli=$("#btnConsEliminar");
+  btnEliminarCli.click(function conEliminar(){
+      $.ajax({
+        type:"POST",
+        url:"",
+        data:"",
+        success:consultaAntEliminar
+      });
+      function consultaAntEliminar(datos){
+          var datAntEliminar=$.parseJSON(datos);
+          var respConElim=$("#respConElim");
+        dibujarTabla(respConElim,datAntEliminar);
+      }
+  });
+  var btnEliminarCli=$("#btnEliminarCli");
+  btnEliminarCli.click(function eliminarDato(){
+    var   idEliminar=parseInt($("#idEliminarCli").val());
+    $.ajax({
+        type:"POST",
+        url:"http://dead616ss.260mb.net/eliminarCLI.php",
+        data:"Id="+idEliminar,
+        success:Eliminacion
+    });
+    function Eliminacion(datos){
+        alert(datos);
+    }
+  });
+
+  ///////finaliza boton para eliminar un registro
+
+
+
+});
+
+
+</script>
+<style type="text/css">
+p{
+text-align:center;
+}
+</style>
+</head>
+<body>
+<div data-role="page" id="principal">
+  <div data-role="header" >
+    <p>Datos de alumno</p>
+  </div>
+  <div data-role="content">
+    <div>
+      <ul data-role="listview">
+	<li><a href="#registro" >Registrar Productos Y Clientes</a></li>
+	<li><a href="#producto" >Consultar Productos</a></li>
+	<li><a href="#cliente" >Consultar Clientes</a></li>
+	<li><a href="#actualizar" >Actualizar Productos --Registrar o Eliminar--</a></li>
+  <li><a href="#actualizar2" >Actualizar Clientes --Registrar o Eliminar--</a></li>
+      </ul>
+    </div>
+  </div>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+<!--Registro de clientes y productos-->
+<div data-role="page" id="registro">
+  <div data-role="header" >
+    <p>Productos</p>
+  </div>
+  <div data-role="content">
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre">
+    <label for="marca">Marca:</label>
+    <input type="text" id="marca">
+    <label for="precio">Precio:</label>
+    <input type="text" id="precio">
+    <label for="descripcion">Descripcion:</label>
+    <input type="text" id="descripcion">    
+    <input type="button" id="produc" value="Registrar un Producto">
+  </div> <br/> <br/> <br/>
+<div data-role="header" >
+    <p>Clientes</p>
+  </div>
+<div data-role="content">
+    <label for="nombre">Nombre:</label>
+    <input type="text" id="nombre">
+    <label for="direccion">Direccion:</label>
+    <input type="text" id="direccion">
+    <label for="correo">Correo:</label>
+    <input type="text" id="correo">
+    <label for="telefono">Telefono:</label>
+    <input type="text" id="telefono">    
+    <input type="button" id="client" value="Registra un Cliente">
+  </div>
+
+<a data-role="button" data-rel="back" data-role="button" data-inline="true" >Regresar</a>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+<!--Finaliza registro de clientes y productos-->
+
+
+
+<!--Consultas de los registros de clientes y productos-->
+
+<!--productos-->
+<div data-role="page" id="producto">
+  <div data-role="header" >
+    <p>Consultar todos</p>
+  </div>
+  <div data-role="content">
+    <input type="button" id="pro" value="Consultar">
+    <div id="consultaPro"></div>
+  </div>
+  <a data-role="button" data-rel="back" data-role="button" data-inline="true" >Regresar</a>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+
+
+<!--clientes-->
+<div data-role="page" id="cliente">
+  <div data-role="header" >
+    <p>Consultar todos</p>
+  </div>
+  <div data-role="content">
+    <input type="button" id="cli" value="Consultar">
+    <div id="consultaCli"></div>
+  </div>
+  <a data-role="button" data-rel="back" data-role="button" data-inline="true" >Regresar</a>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+
+
+
+<!--Finalizacion de las consultas de clientes y productos-->
+
+
+<!--Actualizar Registros de Productos-->
+<div data-role="page" id="actualizar">
+  <div data-role="header" >
+    <p>Actualizar registros de  Productos</p>
+  </div>
+  <div data-role="content">
+    <input type="button" id="btnConsAct" value="Mostrar todos los registros">
+    <div id="respConAct"></div>
+    <label for="nomActualizar">ID a actualizar</label>
+    <input type="text" id="nomActualizar" >
+    <input type="button" id="btnCarDatos" value="Cargar Datos">
+    <div id="respCargDatos"></div>
+    <input type="button" id="btnGuarDatos" value="Guardar Datos">
+		<br/><br/>
+
+    <!--input type="button" id="btnConsEliminar" value="Mostrar Todos los Registros">
+    <div id="respConElim"> </div-->
+    <label for="idEliminar">ID de Producto a Eliminar</label>
+    <input type="text" id="idEliminar">
+      <input type="button" id="btnEliminar" value="Eliminar Registro">
+  </div>
+
+  <a data-role="button" data-rel="back" data-role="button" data-inline="true" >Regresar</a>
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+<!--Finaliza registro de actualizar productos-->
+
+<!--Actualizar Registros de clientes y eliminar-->
+<div data-role="page" id="actualizar2">
+  <div data-role="header" >
+    <p>Actualizar registros de  Productos</p>
+  </div>
+  <div data-role="content">
+    <input type="button" id="btnConsCli" value="Mostrar todos los registros">
+    <div id="respConCli"></div>
+
+
+    <label for="nomActualizar2">ID a actualizar</label>
+    <input type="text" id="nomActualizar2" >
+    <input type="button" id="btnCarDatos2" value="Cargar Datos">
+    <div id="respCargDatos2"></div>
+    <input type="button" id="btnGuarDatos2" value="Guardar Datos">
+    <br/><br/>
+
+    <!--input type="button" id="btnConsEliminar" value="Mostrar Todos los Registros">
+    <div id="respConElim"> </div-->
+    <label for="idEliminarCli">ID de Cliente a Eliminar</label>
+    <input type="text" id="idEliminarCli">
+      <input type="button" id="btnEliminarCli" value="Eliminar Registro">
+  </div>
+
+
+<a data-role="button" data-rel="back" data-role="button" data-inline="true" >Regresar</a>
+
+  <div data-role="footer">
+  <p>Derechos reservados</p>
+  </div>
+</div>
+<!--Finaliza registro de actualizar clientes y eliminar-->
+
+
+
+</body>
+</html>
